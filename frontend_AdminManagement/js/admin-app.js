@@ -1,0 +1,443 @@
+// ===== Authentication =====
+const VALID_CREDENTIALS = {
+    username: 'trungkien',
+    password: '123456'
+};
+
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+    if (isLoggedIn === 'true') {
+        showDashboard();
+    } else {
+        showLoginPage();
+    }
+});
+
+// Login handler
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorElement = document.getElementById('login-error');
+    
+    // Validate credentials
+    if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        sessionStorage.setItem('adminUsername', username);
+        showDashboard();
+        errorElement.textContent = '';
+    } else {
+        errorElement.textContent = 'Invalid username or password';
+        document.getElementById('password').value = '';
+    }
+}
+
+// Show login page
+function showLoginPage() {
+    document.getElementById('login-page').style.display = 'flex';
+    document.getElementById('admin-dashboard').style.display = 'none';
+}
+
+// Show dashboard
+function showDashboard() {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'flex';
+    const username = sessionStorage.getItem('adminUsername') || 'Administrator';
+    document.getElementById('logged-user').textContent = username;
+    
+    // Initialize dashboard
+    roomManager.loadRooms();
+    updateDashboard();
+    displayRooms();
+}
+
+// Logout
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        sessionStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('adminUsername');
+        document.getElementById('login-form').reset();
+        document.getElementById('login-error').textContent = '';
+        showLoginPage();
+    }
+}
+
+// ===== Room Management System =====
+class RoomManager {
+    constructor() {
+        this.rooms = [];
+        this.loadRooms();
+    }
+
+    // Load rooms from database (or localStorage for now)
+    loadRooms() {
+        const stored = localStorage.getItem('khietanRooms');
+        if (stored) {
+            this.rooms = JSON.parse(stored);
+        } else {
+            this.rooms = this.getDefaultRooms();
+            this.saveRooms();
+        }
+    }
+
+    // Save rooms to database/localStorage
+    saveRooms() {
+        localStorage.setItem('khietanRooms', JSON.stringify(this.rooms));
+        this.syncWithWebsite();
+    }
+
+    // Default rooms for demo
+    getDefaultRooms() {
+        return [
+            {
+                id: 1,
+                name: 'Deluxe Garden View',
+                price: 35,
+                capacity: 2,
+                description: 'Spacious room with a beautiful garden view, perfect for couples or solo travelers seeking peace. Features a comfortable queen-size bed, private bathroom, and a cozy reading nook.',
+                amenities: ['Queen Bed', 'Private Bath', 'Garden View', 'Free WiFi'],
+                status: 'available',
+                bookedUntil: null
+            },
+            {
+                id: 2,
+                name: 'Family Suite',
+                price: 65,
+                capacity: 4,
+                description: 'Perfect for families, this suite offers ample space with two bedrooms and a shared living area. Enjoy quality time together while having your own private spaces to retreat to.',
+                amenities: ['2 Bedrooms', 'Living Room', 'Sleeps 4-5', 'Kitchenette'],
+                status: 'booked',
+                bookedUntil: '2025-01-15'
+            },
+            {
+                id: 3,
+                name: 'Cozy Single Room',
+                price: 25,
+                capacity: 1,
+                description: 'Intimate and affordable, our single room is ideal for solo adventurers. Though compact, it\'s thoughtfully designed with everything you need for a comfortable stay.',
+                amenities: ['Single Bed', 'Shared Bath', 'Work Desk', 'Free WiFi'],
+                status: 'available',
+                bookedUntil: null
+            },
+            {
+                id: 4,
+                name: 'Twin Comfort Room',
+                price: 45,
+                capacity: 2,
+                description: 'Two comfortable twin beds make this room perfect for friends traveling together or family members. Bright and airy with modern amenities for your convenience.',
+                amenities: ['2 Twin Beds', 'Private Bath', 'Balcony', 'Mini Fridge'],
+                status: 'available',
+                bookedUntil: null
+            }
+        ];
+    }
+
+    // Sync with website - update website rooms with current availability
+    syncWithWebsite() {
+        // This will communicate with backend to update website
+        fetch('/backend/api/rooms/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.rooms)
+        }).catch(() => {
+            // Offline mode - data saved locally
+            console.log('Offline mode: Data saved locally');
+        });
+    }
+
+    // Get all rooms
+    getAllRooms() {
+        return this.rooms;
+    }
+
+    // Get room by ID
+    getRoomById(id) {
+        return this.rooms.find(r => r.id === parseInt(id));
+    }
+
+    // Add new room
+    addRoom(roomData) {
+        const newRoom = {
+            id: Math.max(...this.rooms.map(r => r.id), 0) + 1,
+            ...roomData
+        };
+        this.rooms.push(newRoom);
+        this.saveRooms();
+        return newRoom;
+    }
+
+    // Update room
+    updateRoom(id, roomData) {
+        const index = this.rooms.findIndex(r => r.id === parseInt(id));
+        if (index > -1) {
+            this.rooms[index] = { ...this.rooms[index], ...roomData };
+            this.saveRooms();
+            return this.rooms[index];
+        }
+        return null;
+    }
+
+    // Delete room
+    deleteRoom(id) {
+        this.rooms = this.rooms.filter(r => r.id !== parseInt(id));
+        this.saveRooms();
+    }
+
+    // Get availability stats
+    getStats() {
+        return {
+            total: this.rooms.length,
+            available: this.rooms.filter(r => r.status === 'available').length,
+            booked: this.rooms.filter(r => r.status === 'booked').length
+        };
+    }
+}
+
+// Initialize Room Manager
+const roomManager = new RoomManager();
+
+// ===== UI Functions =====
+
+// Switch tabs
+function switchTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active from menu items
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Show selected tab
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // Mark menu item as active
+    event.target.classList.add('active');
+    
+    // Update content based on tab
+    if (tabName === 'dashboard') {
+        updateDashboard();
+    } else if (tabName === 'rooms') {
+        displayRooms();
+    } else if (tabName === 'add-room') {
+        resetForm();
+    }
+}
+
+// Update dashboard
+function updateDashboard() {
+    const stats = roomManager.getStats();
+    
+    document.getElementById('total-rooms').textContent = stats.total;
+    document.getElementById('available-count').textContent = stats.available;
+    document.getElementById('booked-count').textContent = stats.booked;
+    
+    // Display quick preview
+    const gridContainer = document.getElementById('quick-rooms-grid');
+    gridContainer.innerHTML = '';
+    
+    roomManager.getAllRooms().forEach(room => {
+        const card = document.createElement('div');
+        card.className = `quick-room-card ${room.status}`;
+        card.innerHTML = `
+            <span class="quick-room-status ${room.status}">${room.status.toUpperCase()}</span>
+            <h4>${room.name}</h4>
+            <p>$${room.price}/night</p>
+            <p>${room.capacity} guests</p>
+        `;
+        gridContainer.appendChild(card);
+    });
+}
+
+// Display rooms in table
+function displayRooms() {
+    const tableBody = document.getElementById('rooms-list');
+    tableBody.innerHTML = '';
+    
+    roomManager.getAllRooms().forEach(room => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${room.name}</strong></td>
+            <td>$${room.price}</td>
+            <td>${room.capacity} guests</td>
+            <td><span class="status-badge ${room.status}">${room.status}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-icon" onclick="editRoom(${room.id})">Edit</button>
+                    <button class="btn-icon btn-delete" onclick="deleteRoomConfirm(${room.id})">Delete</button>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Filter rooms
+function filterRooms() {
+    const searchTerm = document.getElementById('search-rooms').value.toLowerCase();
+    const statusFilter = document.getElementById('filter-status').value;
+    
+    const tableBody = document.getElementById('rooms-list');
+    tableBody.innerHTML = '';
+    
+    roomManager.getAllRooms()
+        .filter(room => {
+            const matchesSearch = room.name.toLowerCase().includes(searchTerm);
+            const matchesStatus = !statusFilter || room.status === statusFilter;
+            return matchesSearch && matchesStatus;
+        })
+        .forEach(room => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${room.name}</strong></td>
+                <td>$${room.price}</td>
+                <td>${room.capacity} guests</td>
+                <td><span class="status-badge ${room.status}">${room.status}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" onclick="editRoom(${room.id})">Edit</button>
+                        <button class="btn-icon btn-delete" onclick="deleteRoomConfirm(${room.id})">Delete</button>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+}
+
+// Save room (add or update)
+function saveRoom(event) {
+    event.preventDefault();
+    
+    const roomId = document.getElementById('room-id').value;
+    const roomData = {
+        name: document.getElementById('room-name').value,
+        price: parseFloat(document.getElementById('room-price').value),
+        capacity: parseInt(document.getElementById('room-capacity').value),
+        description: document.getElementById('room-description').value,
+        amenities: document.getElementById('room-amenities').value.split(',').map(a => a.trim()),
+        status: document.getElementById('room-status').value,
+        bookedUntil: document.getElementById('room-status').value === 'booked' 
+            ? document.getElementById('booked-until').value 
+            : null
+    };
+    
+    if (roomId) {
+        roomManager.updateRoom(roomId, roomData);
+        alert('Room updated successfully!');
+        closeModal();
+    } else {
+        roomManager.addRoom(roomData);
+        alert('Room added successfully!');
+    }
+    
+    resetForm();
+    displayRooms();
+    updateDashboard();
+}
+
+// Edit room
+function editRoom(id) {
+    const room = roomManager.getRoomById(id);
+    if (!room) return;
+    
+    document.getElementById('edit-room-id').value = room.id;
+    document.getElementById('edit-room-name').value = room.name;
+    document.getElementById('edit-room-price').value = room.price;
+    document.getElementById('edit-room-capacity').value = room.capacity;
+    document.getElementById('edit-room-description').value = room.description;
+    document.getElementById('edit-room-amenities').value = room.amenities.join(', ');
+    document.getElementById('edit-room-status').value = room.status;
+    
+    if (room.status === 'booked') {
+        document.getElementById('edit-booked-until-group').style.display = 'block';
+        document.getElementById('edit-booked-until').value = room.bookedUntil;
+    }
+    
+    document.getElementById('edit-form').onsubmit = function(e) {
+        e.preventDefault();
+        const updatedData = {
+            name: document.getElementById('edit-room-name').value,
+            price: parseFloat(document.getElementById('edit-room-price').value),
+            capacity: parseInt(document.getElementById('edit-room-capacity').value),
+            description: document.getElementById('edit-room-description').value,
+            amenities: document.getElementById('edit-room-amenities').value.split(',').map(a => a.trim()),
+            status: document.getElementById('edit-room-status').value,
+            bookedUntil: document.getElementById('edit-room-status').value === 'booked' 
+                ? document.getElementById('edit-booked-until').value 
+                : null
+        };
+        
+        roomManager.updateRoom(id, updatedData);
+        alert('Room updated successfully!');
+        closeModal();
+        displayRooms();
+        updateDashboard();
+    };
+    
+    document.getElementById('edit-modal').style.display = 'flex';
+}
+
+// Delete room with confirmation
+function deleteRoomConfirm(id) {
+    if (confirm('Are you sure you want to delete this room?')) {
+        roomManager.deleteRoom(id);
+        alert('Room deleted successfully!');
+        displayRooms();
+        updateDashboard();
+    }
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+}
+
+// Reset form
+function resetForm() {
+    document.getElementById('room-form').reset();
+    document.getElementById('room-id').value = '';
+    document.getElementById('form-title').textContent = 'Add New Room';
+    document.getElementById('booked-until-group').style.display = 'none';
+}
+
+// Update availability fields on status change
+function updateAvailabilityFields() {
+    const status = document.getElementById('room-status').value;
+    const bookedUntilGroup = document.getElementById('booked-until-group');
+    
+    if (status === 'booked') {
+        bookedUntilGroup.style.display = 'block';
+        document.getElementById('booked-until').required = true;
+    } else {
+        bookedUntilGroup.style.display = 'none';
+        document.getElementById('booked-until').required = false;
+    }
+}
+
+function updateEditAvailabilityFields() {
+    const status = document.getElementById('edit-room-status').value;
+    const bookedUntilGroup = document.getElementById('edit-booked-until-group');
+    
+    if (status === 'booked') {
+        bookedUntilGroup.style.display = 'block';
+        document.getElementById('edit-booked-until').required = true;
+    } else {
+        bookedUntilGroup.style.display = 'none';
+        document.getElementById('edit-booked-until').required = false;
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('edit-modal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
