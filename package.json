@@ -1,0 +1,34 @@
+{
+  "name": "khiet-an-homestay",
+  "version": "1.0.0",
+  "description": "Website for Khiet An Homestay - A cozy, warm, and welcoming homestay",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx http-server frontend -p 3000 -o",
+    "dev": "npx live-server frontend --port=3000",
+    "build": "echo 'No build process required for static site'",
+    "test": "echo 'No tests configured yet'"
+  },
+  "keywords": [
+    "homestay",
+    "hospitality",
+    "accommodation",
+    "booking",
+    "website"
+  ],
+  "author": "Khiet An Homestay",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/khiet-an-homestay.git"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}
