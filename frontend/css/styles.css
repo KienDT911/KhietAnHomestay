@@ -70,8 +70,7 @@ body {
 }
 
 .nav-container {
-    max-width: var(--container-max);
-    margin: 0 auto;
+    width: 100%;
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -365,6 +364,8 @@ body {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
 }
 
 .room-card:hover {
@@ -399,6 +400,9 @@ body {
 
 .room-content {
     padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .room-title {
@@ -436,6 +440,7 @@ body {
     align-items: center;
     padding-top: 20px;
     border-top: 1px solid var(--border-color);
+    margin-top: auto;
 }
 
 .room-price {
