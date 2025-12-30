@@ -2,7 +2,7 @@
 :root {
     /* Primary Colors - From Logo */
     --sage-green: #7B9B7E;
-    --sage-green-nav: #7cb882;
+    --sage-green-nav: #71a565;
     --olive-green: #5a7a5d;
     --dark-green: #3d5a40;
     --warm-brown: #B8926A;
@@ -611,7 +611,21 @@ body {
 }
 
 /* ===== Responsive Design ===== */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 80px;
+    }
+    
+    .hero-logo {
+        width: 120px;
+    }
+}
+
 @media (max-width: 768px) {
+    .nav-container {
+        padding: 10px 20px;
+    }
+    
     .nav-menu {
         gap: 20px;
     }
@@ -620,32 +634,60 @@ body {
         font-size: 14px;
     }
     
+    .hero {
+        height: auto;
+        min-height: 100vh;
+        padding: 120px 20px 60px;
+    }
+    
+    .hero-logo {
+        width: 100px;
+        margin: 40px auto -10px;
+    }
+    
     .hero-title {
-        font-size: 48px;
+        font-size: 60px;
+    }
+    
+    .hero-homestay {
+        font-size: 14px;
+        letter-spacing: 4px;
     }
     
     .hero-subtitle {
         font-size: 18px;
+        margin-bottom: 30px;
     }
     
     .section-title {
         font-size: 32px;
     }
     
+    .section-subtitle {
+        font-size: 16px;
+    }
+    
     .features-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
     .rooms-grid {
         grid-template-columns: 1fr;
+        gap: 25px;
     }
     
     .contact-content {
         grid-template-columns: 1fr;
+        gap: 30px;
     }
     
     .contact-info {
         grid-template-columns: 1fr;
+    }
+    
+    .contact-form-container {
+        padding: 30px 20px;
     }
     
     .footer-content {
@@ -660,15 +702,121 @@ body {
 }
 
 @media (max-width: 480px) {
-    .hero-title {
-        font-size: 36px;
+    html {
+        font-size: 14px;
+    }
+    
+    .nav-container {
+        padding: 8px 15px;
     }
     
     .logo-text {
         font-size: 24px;
     }
     
+    .logo-sub {
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+    
     .nav-menu {
-        gap: 15px;
+        gap: 12px;
+    }
+    
+    .nav-link {
+        font-size: 13px;
+    }
+    
+    .hero {
+        padding: 100px 15px 50px;
+    }
+    
+    .hero-logo {
+        width: 80px;
+        margin: 20px auto -10px;
+    }
+    
+    .hero-title {
+        font-size: 42px;
+    }
+    
+    .hero-homestay {
+        font-size: 12px;
+        letter-spacing: 3px;
+        margin-bottom: 25px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+    
+    .btn-primary {
+        padding: 12px 30px;
+        font-size: 14px;
+    }
+    
+    .section-title {
+        font-size: 28px;
+    }
+    
+    .section-subtitle {
+        font-size: 15px;
+    }
+    
+    .about-intro {
+        font-size: 16px;
+    }
+    
+    .feature-card {
+        padding: 25px 20px;
+    }
+    
+    .room-content {
+        padding: 20px;
+    }
+    
+    .room-title {
+        font-size: 20px;
+    }
+    
+    .room-description {
+        font-size: 13px;
+    }
+    
+    .room-price {
+        font-size: 22px;
+    }
+    
+    .contact-form-container {
+        padding: 25px 15px;
+    }
+    
+    .contact-card {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-title {
+        font-size: 36px;
+    }
+    
+    .hero-homestay {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+    
+    .nav-menu {
+        gap: 10px;
+    }
+    
+    .nav-link {
+        font-size: 12px;
+    }
+    
+    .btn-primary {
+        padding: 10px 25px;
+        font-size: 13px;
     }
 }
