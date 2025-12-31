@@ -252,6 +252,8 @@ function updateDashboard() {
             <p>$${room.price}/night</p>
             <p>${room.capacity} guests</p>
         `;
+        card.onclick = () => openQuickEditModal(room.id);
+        card.style.cursor = 'pointer';
         gridContainer.appendChild(card);
     });
 }
@@ -434,10 +436,93 @@ function updateEditAvailabilityFields() {
     }
 }
 
+// Quick edit modal for status update from dashboard
+function openQuickEditModal(id) {
+    const room = roomManager.getRoomById(id);
+    if (!room) return;
+    
+    const modal = document.getElementById('quick-edit-modal');
+    const modalContent = modal.querySelector('.quick-edit-content');
+    
+    modalContent.innerHTML = `
+        <span class="modal-close" onclick="closeQuickEditModal()">&times;</span>
+        <h2>Quick Edit: ${room.name}</h2>
+        <form id="quick-edit-form" onsubmit="saveQuickEdit(event, ${id})">
+            <div class="form-group">
+                <label for="quick-status">Room Status *</label>
+                <select id="quick-status" required onchange="updateQuickAvailabilityFields()">
+                    <option value="available" ${room.status === 'available' ? 'selected' : ''}>Available</option>
+                    <option value="booked" ${room.status === 'booked' ? 'selected' : ''}>Booked</option>
+                    <option value="maintenance" ${room.status === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+                </select>
+            </div>
+            <div class="form-group" id="quick-booked-until-group" style="display:${room.status === 'booked' ? 'block' : 'none'}">
+                <label for="quick-booked-until">Booked Until *</label>
+                <input type="date" id="quick-booked-until" value="${room.bookedUntil || ''}">
+            </div>
+            <div class="form-group">
+                <label for="quick-price">Price per Night (USD)</label>
+                <input type="number" id="quick-price" value="${room.price}" step="0.01">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Update Room</button>
+                <button type="button" class="btn-secondary" onclick="closeQuickEditModal()">Cancel</button>
+            </div>
+        </form>
+    `;
+    
+    modal.style.display = 'flex';
+}
+
+// Save quick edit
+function saveQuickEdit(event, id) {
+    event.preventDefault();
+    
+    const status = document.getElementById('quick-status').value;
+    const price = parseFloat(document.getElementById('quick-price').value);
+    const bookedUntil = status === 'booked' ? document.getElementById('quick-booked-until').value : null;
+    
+    const updatedData = {
+        status: status,
+        price: price,
+        bookedUntil: bookedUntil
+    };
+    
+    roomManager.updateRoom(id, updatedData);
+    alert('Room status updated successfully!');
+    closeQuickEditModal();
+    updateDashboard();
+    displayRooms();
+}
+
+// Close quick edit modal
+function closeQuickEditModal() {
+    document.getElementById('quick-edit-modal').style.display = 'none';
+}
+
+// Update quick edit availability fields
+function updateQuickAvailabilityFields() {
+    const status = document.getElementById('quick-status').value;
+    const bookedUntilGroup = document.getElementById('quick-booked-until-group');
+    
+    if (status === 'booked') {
+        bookedUntilGroup.style.display = 'block';
+        document.getElementById('quick-booked-until').required = true;
+    } else {
+        bookedUntilGroup.style.display = 'none';
+        document.getElementById('quick-booked-until').required = false;
+    }
+}
+
 // Close modal when clicking outside
 window.onclick = function(event) {
-    const modal = document.getElementById('edit-modal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
+    const editModal = document.getElementById('edit-modal');
+    const quickEditModal = document.getElementById('quick-edit-modal');
+    
+    if (event.target === editModal) {
+        editModal.style.display = 'none';
+    }
+    if (event.target === quickEditModal) {
+        quickEditModal.style.display = 'none';
     }
 }
