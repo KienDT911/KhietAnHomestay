@@ -62,7 +62,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    background: var(--sage-green);
+    background: var(--dark-green);
     color: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
     z-index: 1000;

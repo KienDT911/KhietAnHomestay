@@ -161,9 +161,9 @@ html, body {
 
 /* ===== Admin Header ===== */
 .admin-header {
-    background: var(--sage-green);
+    background: var(--dark-green);
     color: white;
-    padding: 20px 0;
+    padding: 12px 0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
     position: sticky;
     top: 0;
@@ -173,22 +173,60 @@ html, body {
 .header-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+}
+
+.admin-header .admin-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+.admin-header .logo-main {
+    font-family: 'Birthstone', cursive;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--cream);
+    font-style: italic;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+.admin-header .logo-sub {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--tan);
+    letter-spacing: 3px;
+    margin: -3px 0 0 0;
+    display: block;
 }
 
 .admin-title {
     font-family: 'Playfair Display', serif;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
+    color: white;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
 .header-actions {
     display: flex;
     align-items: center;
     gap: 20px;
+    position: relative;
+    z-index: 2;
 }
 
 .admin-user {
@@ -214,23 +252,23 @@ html, body {
 /* ===== Admin Container ===== */
 .admin-container {
     display: flex;
-    max-width: 1400px;
-    margin: 0 auto;
-    gap: 30px;
-    padding: 30px 20px;
+    width: 100%;
+    gap: 0;
+    padding: 0;
     min-height: calc(100vh - 80px);
 }
 
 /* ===== Sidebar ===== */
 .admin-sidebar {
-    width: 200px;
+    width: 220px;
     background: white;
-    border-radius: 8px;
+    border-radius: 0;
     padding: 20px 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    height: fit-content;
+    box-shadow: 1px 0 8px rgba(0, 0, 0, 0.08);
+    height: 100%;
     position: sticky;
-    top: 100px;
+    top: 60px;
+    border-right: 1px solid var(--border-color);
 }
 
 .sidebar-menu {
@@ -262,6 +300,8 @@ html, body {
 /* ===== Content Area ===== */
 .admin-content {
     flex: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
 }
 
 .tab-content {

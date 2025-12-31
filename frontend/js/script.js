@@ -18,19 +18,19 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 let lastScroll = 0;
 const navbar = document.querySelector('.navbar');
 
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
+// window.addEventListener('scroll', () => {
+//     const currentScroll = window.pageYOffset;
     
-    if (currentScroll > 100) {
-        navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.12)';
-        navbar.style.background = 'var(--sage-green)';
-    } else {
-        navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-        navbar.style.background = 'var(--sage-green)';
-    }
+//     if (currentScroll > 100) {
+//         navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.12)';
+//         navbar.style.background = 'var(--sage-green)';
+//     } else {
+//         navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+//         navbar.style.background = 'var(--sage-green)';
+//     }
     
-    lastScroll = currentScroll;
-});
+//     lastScroll = currentScroll;
+// });
 
 // Add active class to navigation links based on scroll position
 const sections = document.querySelectorAll('section[id]');
